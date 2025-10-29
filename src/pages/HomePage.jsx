@@ -1,5 +1,8 @@
+import { Activity, TrendingUp, Users } from 'lucide-react';
 import { GenderRatioPieChart, TrendLineChart } from '../components/charts';
+import { StatsCard, TrapList } from '../components/features';
 import Container from '../components/layout/Container';
+import { mockTraps } from '../services/mockData/traps.mock';
 
 /**
  * Home page - Dashboard overview
@@ -10,6 +13,16 @@ const HomePage = () => {
     male: 28,
     female: 19,
   };
+
+  // Get active traps for display
+  const activeTraps = mockTraps
+    .filter(trap => trap.status === 'active')
+    .slice(0, 4)
+    .map(trap => ({
+      ...trap,
+      captures_today: Math.floor(Math.random() * 10),
+      total_captures: Math.floor(Math.random() * 50) + 10,
+    }));
 
   const trendData = [
     { date: 'Oct 23', male: 15, female: 10, total: 25 },
@@ -31,20 +44,30 @@ const HomePage = () => {
           </p>
         </div>
 
-        {/* Stats Cards - Placeholder */}
+        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white p-6 rounded-lg border border-gray-200">
-            <h3 className="text-sm font-medium text-gray-600">Total CRB Today</h3>
-            <p className="text-3xl font-bold text-gray-900 mt-2">47</p>
-          </div>
-          <div className="bg-white p-6 rounded-lg border border-gray-200">
-            <h3 className="text-sm font-medium text-gray-600">Male</h3>
-            <p className="text-3xl font-bold text-[#60a5fa] mt-2">28</p>
-          </div>
-          <div className="bg-white p-6 rounded-lg border border-gray-200">
-            <h3 className="text-sm font-medium text-gray-600">Female</h3>
-            <p className="text-3xl font-bold text-[#f472b6] mt-2">19</p>
-          </div>
+          <StatsCard
+            title="Total CRB Today"
+            value={47}
+            trend="+12% vs yesterday"
+            trendDirection="up"
+            icon={Activity}
+            color="primary"
+          />
+          <StatsCard
+            title="Male Captures"
+            value={28}
+            subtitle="59.6% of total"
+            icon={Users}
+            color="male"
+          />
+          <StatsCard
+            title="Female Captures"
+            value={19}
+            subtitle="40.4% of total"
+            icon={TrendingUp}
+            color="female"
+          />
         </div>
 
         {/* Charts */}
@@ -88,6 +111,12 @@ const HomePage = () => {
         {/* Trend Chart */}
         <div className="bg-white p-6 rounded-lg border border-gray-200">
           <TrendLineChart data={trendData} />
+        </div>
+
+        {/* Active Traps */}
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Active Traps</h2>
+          <TrapList traps={activeTraps} />
         </div>
       </div>
     </Container>
