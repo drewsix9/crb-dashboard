@@ -1,25 +1,35 @@
-import { Bell, Menu, Wifi, WifiOff } from 'lucide-react';
-import PropTypes from 'prop-types';
-import { useState } from 'react';
-import Badge from '../../ui/Badge';
-import IconButton from '../../ui/IconButton';
+import { Bell, LogOut, Menu, User, Wifi, WifiOff } from "lucide-react";
+import PropTypes from "prop-types";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../contexts/AuthContext";
+import Badge from "../../ui/Badge";
+import IconButton from "../../ui/IconButton";
 
 /**
  * Header component with system status and notifications
  */
 const Header = ({ onMenuClick, alertCount = 0 }) => {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
-  const [isOnline, setIsOnline] = useState(true);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [isOnline] = useState(true);
   const [lastUpdated] = useState(new Date());
 
   // Format last updated time
   const formatLastUpdated = () => {
     const now = new Date();
     const diff = Math.floor((now - lastUpdated) / 1000); // seconds
-    
+
     if (diff < 60) return `${diff}s ago`;
     if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
     return `${Math.floor(diff / 3600)}h ago`;
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login");
   };
 
   return (
@@ -59,7 +69,6 @@ const Header = ({ onMenuClick, alertCount = 0 }) => {
               </>
             )}
           </div>
-
           {/* Last Updated */}
           <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg">
             <span className="text-xs text-gray-500">Updated:</span>
@@ -67,7 +76,6 @@ const Header = ({ onMenuClick, alertCount = 0 }) => {
               {formatLastUpdated()}
             </span>
           </div>
-
           {/* Notifications */}
           <div className="relative">
             <IconButton
@@ -82,7 +90,7 @@ const Header = ({ onMenuClick, alertCount = 0 }) => {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-5 w-5 bg-red-500 items-center justify-center">
                     <span className="text-xs text-white font-bold">
-                      {alertCount > 9 ? '9+' : alertCount}
+                      {alertCount > 9 ? "9+" : alertCount}
                     </span>
                   </span>
                 </span>
@@ -131,6 +139,38 @@ const Header = ({ onMenuClick, alertCount = 0 }) => {
               </div>
             )}
           </div>
+          {/* User Menu */}
+          <div className="relative">
+            <IconButton
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              variant="ghost"
+              size="md"
+              tooltip="User menu"
+            >
+              <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center">
+                <User size={16} className="text-white" />
+              </div>
+            </IconButton>
+
+            {/* User Dropdown */}
+            {showUserMenu && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+                <div className="p-4 border-b border-gray-200">
+                  <p className="text-sm font-medium text-gray-900">
+                    {user?.email || "User"}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">User Account</p>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  <LogOut size={16} />
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>{" "}
         </div>
       </div>
     </header>
