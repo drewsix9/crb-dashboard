@@ -71,7 +71,7 @@ function App() {
               }
             />
             <Route
-              path="/manage-traps"
+              path="/map"
               element={
                 <ProtectedRoute>
                   <MainLayout>

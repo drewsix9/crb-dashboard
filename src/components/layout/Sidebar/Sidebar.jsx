@@ -1,6 +1,6 @@
-import { FileText, Home, Image, Settings } from 'lucide-react';
-import PropTypes from 'prop-types';
-import { NavLink } from 'react-router-dom';
+import { FileText, Home, Image, Settings } from "lucide-react";
+import PropTypes from "prop-types";
+import { NavLink } from "react-router-dom";
 
 /**
  * Sidebar navigation component
@@ -9,10 +9,10 @@ import { NavLink } from 'react-router-dom';
  */
 const Sidebar = ({ isOpen, onClose }) => {
   const navItems = [
-    { path: '/', icon: Home, label: 'Home' },
-    { path: '/gallery', icon: Image, label: 'Gallery' },
-    { path: '/reports', icon: FileText, label: 'Reports' },
-    { path: '/manage-traps', icon: Settings, label: 'Manage Traps' },
+    { path: "/", icon: Home, label: "Home" },
+    { path: "/gallery", icon: Image, label: "Gallery" },
+    { path: "/reports", icon: FileText, label: "Reports" },
+    { path: "/map", icon: Settings, label: "Map" },
   ];
 
   return (
@@ -31,7 +31,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           fixed top-0 left-0 h-full bg-primary-700 text-white z-50
           transition-transform duration-300 ease-in-out
           w-64 lg:translate-x-0
-          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+          ${isOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
         {/* Logo/Brand */}
@@ -75,8 +75,8 @@ const Sidebar = ({ isOpen, onClose }) => {
                     className={({ isActive }) =>
                       `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                         isActive
-                          ? 'bg-primary-800 text-white'
-                          : 'text-primary-100 hover:bg-primary-600'
+                          ? "bg-primary-800 text-white"
+                          : "text-primary-100 hover:bg-primary-600"
                       }`
                     }
                   >
