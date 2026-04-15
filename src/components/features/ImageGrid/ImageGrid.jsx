@@ -1,21 +1,21 @@
-import PropTypes from 'prop-types';
-import { useState } from 'react';
-import Badge from '../../ui/Badge';
-import Spinner from '../../ui/Spinner';
+import PropTypes from "prop-types";
+import { useState } from "react";
+import Badge from "../../ui/Badge";
+import Spinner from "../../ui/Spinner";
 
 /**
  * Image Grid component with lazy loading
  */
-const ImageGrid = ({ 
+const ImageGrid = ({
   images = [],
   onImageClick,
   loading = false,
-  className = '',
+  className = "",
 }) => {
   const [loadedImages, setLoadedImages] = useState(new Set());
 
   const handleImageLoad = (imageId) => {
-    setLoadedImages(prev => new Set([...prev, imageId]));
+    setLoadedImages((prev) => new Set([...prev, imageId]));
   };
 
   if (loading) {
@@ -35,7 +35,9 @@ const ImageGrid = ({
   }
 
   return (
-    <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ${className}`}>
+    <div
+      className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ${className}`}
+    >
       {images.map((image) => (
         <div
           key={image.id}
@@ -51,12 +53,12 @@ const ImageGrid = ({
             )}
             <img
               src={image.image_url}
-              alt={`Capture from ${image.trap_id}`}
+              alt={`Capture from ${image.image_filename}`}
               className="w-full h-full object-cover"
               loading="lazy"
               onLoad={() => handleImageLoad(image.id)}
             />
-            
+
             {/* Overlay on hover */}
             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200" />
           </div>
@@ -65,21 +67,21 @@ const ImageGrid = ({
           <div className="p-3">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-semibold text-gray-900">
-                {image.trap_id}
+                {image.image_filename}
               </span>
-              <Badge 
-                variant={image.gender === 'male' ? 'info' : 'default'}
+              <Badge
+                variant={image.gender === "male" ? "info" : "default"}
                 size="sm"
               >
-                {image.gender === 'male' ? 'Male' : 'Female'}
+                {image.gender === "male" ? "Male" : "Female"}
               </Badge>
             </div>
-            
+
             <p className="text-xs text-gray-500">
-              {new Date(image.captured_at).toLocaleDateString()} at{' '}
-              {new Date(image.captured_at).toLocaleTimeString([], { 
-                hour: '2-digit', 
-                minute: '2-digit' 
+              {new Date(image.captured_at).toLocaleDateString()} at{" "}
+              {new Date(image.captured_at).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
               })}
             </p>
           </div>
@@ -95,9 +97,10 @@ ImageGrid.propTypes = {
       id: PropTypes.number.isRequired,
       trap_id: PropTypes.string.isRequired,
       image_url: PropTypes.string.isRequired,
+      image_filename: PropTypes.string.isRequired,
       gender: PropTypes.string,
       captured_at: PropTypes.string.isRequired,
-    })
+    }),
   ).isRequired,
   onImageClick: PropTypes.func,
   loading: PropTypes.bool,

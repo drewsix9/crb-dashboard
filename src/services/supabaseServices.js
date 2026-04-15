@@ -214,6 +214,28 @@ export const supabaseImagesService = {
  */
 export const supabaseStatisticsService = {
   /**
+   * Get trap statistics
+   */
+  getTrapStatistics: async () => {
+    if (isCacheValid(CACHE.statistics)) {
+      return CACHE.statistics.data;
+    }
+
+    try {
+      const rawStats = await getTrapStatisticsFromDB();
+      const normalizedStats = normalizeStatistics(rawStats);
+      CACHE.statistics.data = normalizedStats;
+      CACHE.statistics.timestamp = Date.now();
+      return normalizedStats;
+    } catch (error) {
+      console.error("Failed to fetch trap statistics:", error);
+      CACHE.statistics.data = null;
+      CACHE.statistics.timestamp = null;
+      throw error;
+    }
+  },
+
+  /**
    * Get chart data for dashboard
    */
   getChartData: async (days = 30) => {
@@ -251,6 +273,8 @@ export const supabaseStatisticsService = {
    * Invalidate cache
    */
   invalidateCache: () => {
+    CACHE.statistics.data = null;
+    CACHE.statistics.timestamp = null;
     CACHE.chartData.data = null;
     CACHE.chartData.timestamp = null;
   },

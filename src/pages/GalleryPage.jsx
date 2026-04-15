@@ -17,6 +17,8 @@ const GalleryPage = () => {
     id: img.id,
     trap_id: img.trap_id,
     image_url: img.image_url,
+    image_filename:
+      img.image_filename || img.image_path?.split("/").pop() || "Unknown",
     gender: img.metadata?.gender || "unknown",
     captured_at: img.taken_at,
     // Include full detection data for modal display
@@ -25,15 +27,47 @@ const GalleryPage = () => {
   }));
 
   // Filter images based on current filters
-  const filteredImages = transformedImages.filter((image) => {
+  let filteredImages = transformedImages.filter((image) => {
     if (filters.trapId && image.trap_id !== filters.trapId) return false;
     if (filters.gender && image.gender !== filters.gender) return false;
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
-      if (!image.trap_id.toLowerCase().includes(searchLower)) return false;
+      if (!image.image_filename.toLowerCase().includes(searchLower))
+        return false;
     }
+
+    // Date range filtering
+    if (filters.dateFrom) {
+      const fromDate = new Date(filters.dateFrom);
+      const imageDate = new Date(image.captured_at);
+      if (imageDate < fromDate) return false;
+    }
+    if (filters.dateTo) {
+      const toDate = new Date(filters.dateTo);
+      const imageDate = new Date(image.captured_at);
+      // Add 1 day to include the entire end date
+      toDate.setDate(toDate.getDate() + 1);
+      if (imageDate >= toDate) return false;
+    }
+
     return true;
   });
+
+  // Sort images based on sortBy filter
+  if (filters.sortBy) {
+    filteredImages = [...filteredImages].sort((a, b) => {
+      switch (filters.sortBy) {
+        case "date_desc":
+          return new Date(b.captured_at) - new Date(a.captured_at);
+        case "date_asc":
+          return new Date(a.captured_at) - new Date(b.captured_at);
+        case "trap_id":
+          return a.trap_id.localeCompare(b.trap_id);
+        default:
+          return 0;
+      }
+    });
+  }
 
   return (
     <>
