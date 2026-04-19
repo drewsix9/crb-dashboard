@@ -8,13 +8,13 @@ import { MarkerPopupContent } from "./MarkerPopupContent";
 
 /**
  * Status-to-color mapping for trap markers
- * Uses the app's color scheme from theme.js
+ * Maps to binary status: Active (green) or Inactive (red)
  */
 const STATUS_COLORS = {
   ACTIVE: "#4ade80", // Green - active trap
-  OFFLINE: "#ef4444", // Red - offline trap
-  MAINTENANCE: "#fb923c", // Orange - maintenance
-  FALLEN: "#9ca3af", // Gray - fallen
+  OFFLINE: "#ef4444", // Red - inactive trap
+  MAINTENANCE: "#ef4444", // Red - inactive trap
+  FALLEN: "#ef4444", // Red - inactive trap
 };
 
 /**

@@ -1,6 +1,5 @@
 import { Battery, Signal, SignalZero } from "lucide-react";
 import PropTypes from "prop-types";
-import Badge from "../../ui/Badge";
 import Card, { CardContent, CardHeader } from "../../ui/Card";
 
 /**
@@ -42,8 +41,6 @@ const TrapCard = ({ trap, onClick, className = "" }) => {
     return <Signal size={16} className="text-green-600" />;
   };
 
-  const statusText = trap.is_active ? "Active" : "Inactive";
-
   return (
     <Card className={className} onClick={onClick} hoverable={!!onClick}>
       <CardHeader>
@@ -51,9 +48,6 @@ const TrapCard = ({ trap, onClick, className = "" }) => {
           <h3 className="text-lg font-semibold text-gray-900">
             {trap.trap_id}
           </h3>
-          <Badge variant={trap.is_active ? "success" : "default"} size="sm">
-            {statusText}
-          </Badge>
         </div>
       </CardHeader>
 
@@ -69,9 +63,6 @@ const TrapCard = ({ trap, onClick, className = "" }) => {
             </div>
             <div className="flex items-center gap-1.5">
               {getSignalIcon(trap.is_active)}
-              <span className="text-xs text-gray-600 capitalize">
-                {statusText}
-              </span>
             </div>
           </div>
 

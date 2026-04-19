@@ -135,23 +135,9 @@ export const TrapsMap = ({ traps = [], loading = false, error = null }) => {
           <div className="flex items-center gap-2">
             <div
               className="w-4 h-4 rounded-full"
-              style={{ backgroundColor: "#fb923c" }}
-            />
-            <span className="text-xs text-gray-700">Maintenance</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div
-              className="w-4 h-4 rounded-full"
               style={{ backgroundColor: "#ef4444" }}
             />
-            <span className="text-xs text-gray-700">Offline</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div
-              className="w-4 h-4 rounded-full"
-              style={{ backgroundColor: "#9ca3af" }}
-            />
-            <span className="text-xs text-gray-700">Fallen</span>
+            <span className="text-xs text-gray-700">Inactive</span>
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { FileText, Home, Image, Settings } from "lucide-react";
+import { FileText, Home, Image, Map } from "lucide-react";
 import PropTypes from "prop-types";
 import { NavLink } from "react-router-dom";
 
@@ -12,7 +12,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     { path: "/", icon: Home, label: "Home" },
     { path: "/gallery", icon: Image, label: "Gallery" },
     { path: "/reports", icon: FileText, label: "Reports" },
-    { path: "/map", icon: Settings, label: "Map" },
+    { path: "/map", icon: Map, label: "Map" },
   ];
 
   return (
