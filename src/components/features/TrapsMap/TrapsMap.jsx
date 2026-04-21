@@ -4,8 +4,8 @@
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import PropTypes from "prop-types";
-import { useEffect, useRef } from "react";
-import { MapContainer, TileLayer } from "react-leaflet";
+import { useEffect, useRef, useState } from "react";
+import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import { Spinner } from "../../ui/Spinner";
 import { MapMarker } from "../MapMarker";
 
@@ -42,32 +42,97 @@ const calculateBounds = (traps) => {
 };
 
 /**
+ * Inner component that handles map bounds fitting
+ * Must be inside MapContainer to use useMap hook
+ */
+const MapFitBounds = ({ traps }) => {
+  const map = useMap();
+  const hasZoomedRef = useRef(false);
+
+  /**
+   * Fit map bounds to show all traps when they load
+   * Waits for map to be fully initialized before fitting bounds
+   */
+  useEffect(() => {
+    if (!map || traps.length === 0) {
+      hasZoomedRef.current = false;
+      return;
+    }
+
+    // Prevent multiple zoom operations
+    if (hasZoomedRef.current) {
+      return;
+    }
+
+    /**
+     * Wait for map to be ready before fitting bounds
+     * Uses a small delay and checks if map is initialized
+     */
+    const fitMapBounds = () => {
+      try {
+        const bounds = calculateBounds(traps);
+        if (bounds && map._size && map._size.x > 0) {
+          hasZoomedRef.current = true;
+          map.fitBounds(bounds, { padding: [50, 50] });
+        } else if (!hasZoomedRef.current) {
+          // If map isn't ready yet, try again after a delay
+          setTimeout(fitMapBounds, 100);
+        }
+      } catch (err) {
+        console.error("Error fitting map bounds:", err);
+      }
+    };
+
+    // Use requestAnimationFrame to wait for map rendering
+    const animFrameId = requestAnimationFrame(() => {
+      setTimeout(fitMapBounds, 50);
+    });
+
+    return () => cancelAnimationFrame(animFrameId);
+  }, [map, traps]);
+
+  return null;
+};
+
+/**
  * TrapsMap component
  * Renders an interactive Leaflet map with all traps as markers
  * Auto-fits the map to show all trap markers with status-based color coding
+ * Waits for GPS data to load before rendering the map
  */
 export const TrapsMap = ({ traps = [], loading = false, error = null }) => {
-  const mapRef = useRef(null);
+  const [isMapReady, setIsMapReady] = useState(false);
 
   /**
-   * Fit map bounds to show all traps
+   * Show loading state while data is being fetched
+   * Don't render map until data is loaded
    */
-  useEffect(() => {
-    if (mapRef.current && traps.length > 0) {
-      const bounds = calculateBounds(traps);
-      if (bounds) {
-        // Fit bounds with padding
-        mapRef.current.fitBounds(bounds, { padding: [50, 50] });
-      }
+  if (loading || !traps.length) {
+    if (loading) {
+      return (
+        <div className="w-full h-96 flex items-center justify-center bg-gray-50 rounded-lg">
+          <div className="text-center">
+            <Spinner />
+            <p className="text-gray-600 mt-2 text-sm">
+              Loading trap locations...
+            </p>
+          </div>
+        </div>
+      );
     }
-  }, [traps]);
 
-  if (loading) {
-    return (
-      <div className="w-full h-96 flex items-center justify-center bg-gray-50 rounded-lg">
-        <Spinner />
-      </div>
-    );
+    if (traps.length === 0) {
+      return (
+        <div className="w-full h-96 flex items-center justify-center bg-gray-50 rounded-lg">
+          <div className="text-center">
+            <p className="text-gray-600 font-semibold">No traps found</p>
+            <p className="text-gray-500 text-sm">
+              Add traps with location data to display on the map
+            </p>
+          </div>
+        </div>
+      );
+    }
   }
 
   if (error) {
@@ -81,30 +146,17 @@ export const TrapsMap = ({ traps = [], loading = false, error = null }) => {
     );
   }
 
-  if (traps.length === 0) {
-    return (
-      <div className="w-full h-96 flex items-center justify-center bg-gray-50 rounded-lg">
-        <div className="text-center">
-          <p className="text-gray-600 font-semibold">No traps found</p>
-          <p className="text-gray-500 text-sm">
-            Add traps with location data to display on the map
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div
       className="w-full h-screen relative rounded-lg overflow-hidden shadow-lg"
       style={{ height: "calc(100vh - 120px)" }}
     >
       <MapContainer
-        ref={mapRef}
         center={DEFAULT_CENTER}
         zoom={DEFAULT_ZOOM}
         className="w-full h-full"
         style={{ zIndex: 0 }}
+        onLoad={() => setIsMapReady(true)}
       >
         {/* OpenStreetMap tiles */}
         <TileLayer
@@ -112,6 +164,9 @@ export const TrapsMap = ({ traps = [], loading = false, error = null }) => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           maxZoom={19}
         />
+
+        {/* Fit bounds when traps data is available and map is ready */}
+        {isMapReady && traps.length > 0 && <MapFitBounds traps={traps} />}
 
         {/* Render markers for all traps */}
         {traps.map((trap) => (
